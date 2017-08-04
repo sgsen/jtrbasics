@@ -9,7 +9,7 @@
 
 cat_function <- function(love=TRUE){
   if(love==TRUE){
-    print("I love cats!")
+    print("I love cats! Seriously I don't")
   }
   else {
     print("I am not a cool person. Right??")
@@ -24,7 +24,6 @@ load_payments_data <- function(){
   library(stringr)
   library(scales)
   library(googlesheets)
-  
   
   
   paymentsgooglesheet <- gs_title("PaymentReconciliationData_Aug17")

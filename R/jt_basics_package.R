@@ -213,6 +213,13 @@ fix_pmtdata <- function(db) {
 
 
 
+#' Payment data extraction & cleaning function
+#'
+#' This function visits the monthly reconciliation sheets and collects the data together 
+#' @keywords sqlite payments
+#' @export 
+#' @examples
+#' db <- load_payments_data() )
 
 load_payments_data <- function(){
   library(tidyverse)

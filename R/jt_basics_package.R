@@ -92,7 +92,7 @@ getmonthlysheet <- function(filenamevar){
   
   pd = select(pd, -starts_with("X")) #drop blank columns
   
-  matchterms = "Cheque Replacement|Cheque Bounce|Return ID"
+  matchterms = "Cheque Replacement|Cheque Bounce|Return ID|Test|Test1"
   pd = select(pd, -matches(matchterms)) #drop additional columns
   
   

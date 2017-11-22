@@ -98,8 +98,8 @@ getmonthlysheet <- function(filenamevar){
   
   pd = pd %>% select(noquote(order(colnames(pd)))) #sortcolsalpha
   
-  pd$`Delivery Date` <- parse_date_time(pd$`Delivery Date`, c("ymd", "dmy", "%m/%d/%Y", "%d-%m-%Y"))
-  pd$`Payment Date` <- parse_date_time(pd$`Payment Date`, c("ymd", "dmy", "%m/%d/%Y", "%d-%m-%Y"))
+  pd$`Delivery Date` <- parse_date_time(pd$`Delivery Date`, c("%Y-%m-%d","ymd", "dmy", "%m/%d/%Y", "%d-%m-%Y"))
+  pd$`Payment Date` <- parse_date_time(pd$`Payment Date`, c("%Y-%m-%d", "ymd", "dmy", "%m/%d/%Y", "%d-%m-%Y"))
   return (pd)
 }
 
@@ -230,11 +230,13 @@ load_payments_data <- function(){
   library(googlesheets)
   
   ##A. Get monthly sheets
+  pd_nov1 <- getmonthlysheet("PaymentReconciliationData_Nov17_01_13")
   
-  pd_nov1 <- getmonthlysheet("PaymentReconciliationData_Nov17_01_17")
+  pd_nov2 <- getmonthlysheet("PaymentReconciliationData_Nov17_14_30")
+  paymentsdata <- rbind(pd_nov2, pd_nov1)
   
   pd_oct2 <- getmonthlysheet("PaymentReconciliationData_Oct17_18_31")
-  paymentsdata <- rbind(pd_oct2, pd_nov1)
+  paymentsdata <- rbind(paymentsdata, pd_oct2)
   
   pd_oct1 <- getmonthlysheet("PaymentReconciliationData_Oct17_01_17")
   paymentsdata <- rbind(paymentsdata, pd_oct1)
@@ -863,14 +865,26 @@ get_customer_transactions <- function(paymentsdata) {
     mutate(dailygmv_customer = sum(orderamountcollected, na.rm=T) + sum(shippingamountcollected,na.rm=T)) %>% ungroup()
   
   
-  paymentsdata_gmv_customer = paymentsdata_gmv_customer %>% ungroup() %>% select(bid, deliverydate, paymentdate, paymentmode, storename, dailygmv_customer) %>% distinct() %>% arrange(deliverydate)
+  paymentsdata_gmv_customer = paymentsdata_gmv_customer %>% 
+    ungroup() %>% 
+    select(bid, deliverydate, paymentdate, paymentmode, storename, dailygmv_customer) %>% 
+    distinct() %>% 
+    arrange(deliverydate)
   
-  paymentsdata_gmv_customer <- paymentsdata_gmv_customer %>% filter(!is.na(deliverydate))
+  paymentsdata_gmv_customer <- paymentsdata_gmv_customer %>% filter(!is.na(deliverydate) | !is.na(paymentdate))
   
   paymentsdata_gmv_customer$yr_month_dlv <- format(as.Date(paymentsdata_gmv_customer$deliverydate), "%Y-%m")
   paymentsdata_gmv_customer$yr_wkly_dlv <- format(as.Date(paymentsdata_gmv_customer$deliverydate), "%Y-%U")
   
-  paymentsdata_gmv_customer <- paymentsdata_gmv_customer %>% mutate(pmode = ifelse(grepl("*Credit*", paymentmode), "Credit", paymentmode))
+  paymentsdata_gmv_customer$paymentmode <- gsub("Debit / Credit Card", "Card", paymentsdata_gmv_customer$paymentmode)
+  
+  paymentsdata_gmv_customer$pmode <- paymentsdata_gmv_customer$paymentmode
+  
+  paymentsdata_gmv_customer$pmode <- gsub("Credit - FT Cash", "Credit", paymentsdata_gmv_customer$pmode)
+  paymentsdata_gmv_customer$pmode <- gsub("Credit - FundsCorner - Cash", "Credit", paymentsdata_gmv_customer$pmode)
+  paymentsdata_gmv_customer$pmode <- gsub("Credit - FundsCorner - PDC", "Credit", paymentsdata_gmv_customer$pmode)
+  
+  
   
   paymentsdata_gmv_customer <- paymentsdata_gmv_customer %>% filter(deliverydate>"2017-01-01" & deliverydate < today())
   

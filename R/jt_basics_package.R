@@ -418,8 +418,8 @@ load_payments_data <- function(){
       paymentmode = ifelse(paymentmode == "wallet", "Wallet", paymentmode))
   
   paymentsdata = paymentsdata %>% mutate(
-    paymentmode = ifelse(paymentmode == "Credit - FundsCorner" | paymentmode == "FundsCorner" | paymentmode == "FundsCorner - PDC", "Credit - FundsCorner - PDC", paymentmode), 
-    paymentmode = ifelse(paymentmode == "FundsCorner - Cash", "Credit - FundsCorner - Cash", paymentmode)
+    paymentmode = ifelse(paymentmode == "Credit - FundsCorner" | paymentmode == "FundsCorner" | paymentmode == "FundsCorner - PDC" | paymentmode == "FUNDSCORNER_PDC", "Credit - FundsCorner - PDC", paymentmode), 
+    paymentmode = ifelse(paymentmode == "FundsCorner - Cash" | paymentmode == "FUNDSCORNER_CASH" , "Credit - FundsCorner - Cash", paymentmode)
   ) 
   
   
@@ -886,6 +886,8 @@ get_customer_transactions <- function(paymentsdata) {
   paymentsdata_gmv_customer$pmode <- gsub("Credit - FT Cash", "Credit", paymentsdata_gmv_customer$pmode)
   paymentsdata_gmv_customer$pmode <- gsub("Credit - FundsCorner - Cash", "Credit", paymentsdata_gmv_customer$pmode)
   paymentsdata_gmv_customer$pmode <- gsub("Credit - FundsCorner - PDC", "Credit", paymentsdata_gmv_customer$pmode)
+  #paymentsdata_gmv_customer$pmode <- gsub("FUNDSCORNER_CASH", "Credit", paymentsdata_gmv_customer$pmode)
+  #paymentsdata_gmv_customer$pmode <- gsub("FUNDSCORNER_PDC", "Credit", paymentsdata_gmv_customer$pmode)
   
   
   

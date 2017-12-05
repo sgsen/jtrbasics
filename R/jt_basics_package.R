@@ -491,6 +491,7 @@ load_cheques_data <- function() {
   
   checkdata = checkdata_raw %>% 
     select(-starts_with("X")) %>% 
+    select(-contains("Handover")) %>% 
     filter(!is.na(BID))
   
   

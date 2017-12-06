@@ -521,17 +521,17 @@ load_cheques_data <- function() {
   
   
   #lastbounce
-  temp = checkdata %>% 
-    group_by(bid) %>% 
-    mutate(
-      last_bounce_date = if_else(bouncereason =="Insufficient Funds", date, NULL)
-    )
-  
-  checkdata = temp %>% 
-    group_by(bid) %>% 
-    mutate (
-      last_bounce_date = max(last_bounce_date, na.rm = T)
-    ) %>% ungroup()
+  # temp = checkdata %>% 
+  #   group_by(bid) %>% 
+  #   mutate(
+  #     last_bounce_date = if_else(bouncereason =="Insufficient Funds", date, NA)
+  #   )
+  # 
+  # checkdata = temp %>% 
+  #   group_by(bid) %>% 
+  #   mutate (
+  #     last_bounce_date = max(last_bounce_date, na.rm = T)
+  #   ) %>% ungroup()
   
   return(checkdata)
   
